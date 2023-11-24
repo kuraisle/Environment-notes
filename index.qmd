@@ -1,0 +1,16 @@
+---
+title: "Environment notes"
+---
+
+I wanted to understand better how messed up the environment is, so I'm making some notes using the actual available data on the subject. The areas I'm going to cover are:
+
+## [Greenhouse gases](greenhouse_gases.qmd)
+This is obviously the big deal. The world is getting warmer because of the presence of greater amounts of certain gases in the atmosphere. [Global warming](Global warming terminology.qmd)
+
+### CO<sub>2</sub>
+### Methane
+### Fluorinated gases
+## Water pollution
+## Biodiversity
+
+I'll be trying 

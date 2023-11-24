@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Environment notes",
+    "section": "",
+    "text": "I wanted to understand better how messed up the environment is, so I’m making some notes using the actual available data on the subject. The areas I’m going to cover are:"
+  },
+  {
+    "objectID": "index.html#greenhouse-gases",
+    "href": "index.html#greenhouse-gases",
+    "title": "Environment notes",
+    "section": "Greenhouse gases",
+    "text": "Greenhouse gases\nThis is obviously the big deal. The world is getting warmer because of the presence of greater amounts of certain gases in the atmosphere. Global warming\n\nCO2\n\n\nMethane\n\n\nFluorinated gases"
+  },
+  {
+    "objectID": "index.html#water-pollution",
+    "href": "index.html#water-pollution",
+    "title": "Environment notes",
+    "section": "Water pollution",
+    "text": "Water pollution"
+  },
+  {
+    "objectID": "index.html#habitat-depletion",
+    "href": "index.html#habitat-depletion",
+    "title": "Environment notes",
+    "section": "Habitat depletion",
+    "text": "Habitat depletion"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "index.html#biodiversity",
+    "href": "index.html#biodiversity",
+    "title": "Environment notes",
+    "section": "Biodiversity",
+    "text": "Biodiversity\nI’ll be trying"
+  },
+  {
+    "objectID": "Global warming terminology.html",
+    "href": "Global warming terminology.html",
+    "title": "Global warming terminology",
+    "section": "",
+    "text": "Global warming\nThe average temperature of the globe is increasing. However, this is on the level of climate (long term trends), and taken for the entire globe. This doesn’t necessarily mean that the temperature on a given day at any location in the world will be higher. In fact, extreme weather events"
+  },
+  {
+    "objectID": "Global_warming_terminology.html",
+    "href": "Global_warming_terminology.html",
+    "title": "Global warming terminology",
+    "section": "",
+    "text": "Global warming\nThe average temperature of the globe is increasing. However, this is on the level of climate (long term trends), and taken for the entire globe. This doesn’t necessarily mean that the temperature on a given day at any location in the world will be higher. In fact, both hot and cold extreme weather events are increasing in a warming globe as established weather patterns break down."
+  },
+  {
+    "objectID": "extras.html",
+    "href": "extras.html",
+    "title": "Extras",
+    "section": "",
+    "text": "These are just some bits that don’t fit with the main notes, but I needed to put somewhere.\n\nCarbon footprint of MP’s travel expenses"
+  },
+  {
+    "objectID": "mp_expense_carbon.html",
+    "href": "mp_expense_carbon.html",
+    "title": "MP carbon footprint on expenses",
+    "section": "",
+    "text": "Here we’re going to look at the carbon footprint of the travel UK Members of Parliament (MPs) have put on their expenses. First, we will get the data for MPs’ expenses from IPSA. I’ll be looking at the data from the year 2022-2023, as this is the last complete year of data as of 21/11/2023.\nHere are the top 30 spenders, by the amount paid for their travel.\n\n\nCode\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\nmp_data: pd.DataFrame = pd.read_csv(\"data/individualBusinessCosts_22_23.csv\", low_memory=False)\ntravel_tags: list[str] = ['Dependant Travel', 'MP Travel', 'Staff Travel']\ntravel_data: pd.DataFrame = mp_data[mp_data['Category'].isin(travel_tags)][['Name', 'Category', 'Cost Type', 'Short Description', 'Details', 'Journey Type', 'From', 'To', 'Travel', 'Nights', 'Mileage', 'Amount Claimed', 'Amount Paid', 'Amount Not Paid', 'Amount Repaid']]\ntotal_paid = travel_data[['Name', 'Amount Paid']].groupby('Name').sum().sort_values(by='Amount Paid', ascending=False)\n\nfig, ax = plt.subplots(figsize = [8,8])\ntotal_paid.iloc[:30].plot(kind='bar', ax=ax)\nplt.ylabel(\"Total Travel Expenses (£)\")\nplt.xticks(rotation = 60, ha = \"right\")\nplt.legend([],[])\nplt.show()\n\n\n\n\n\nPhew, Steven Bonnar spent nearly £60,000 on travel.\n\n\nCode\nbonnar_cost_split = travel_data.loc[travel_data['Name'] == 'Steven Bonnar'][['Cost Type', 'Amount Paid']].groupby('Cost Type').sum()\nfig, ax = plt.subplots()\n\nax.pie(x = bonnar_cost_split['Amount Paid'],\n       labels = bonnar_cost_split.index,\n       labeldistance=None,\n       autopct='%1.0f%%'\n    )\nax.legend(bbox_to_anchor = (1.1, 0.8))\n\nplt.show()\n\n\n\n\n\nA lot of this was spent on air travel. Steven Bonnar is the Scottish National Party (SNP) MP for Coatbridge, Chryston and Bellshill.\n\n\nCode\nbonnar_flights = (travel_data\n    .loc[(travel_data['Name'] == 'Steven Bonnar') & (travel_data['Cost Type'] == 'Air travel')][['From', 'To']]\n    .groupby(by=['From', 'To'], group_keys='Total Flights')\n    .size()\n    .reset_index(name = 'Number of Trips')\n    )\nbonnar_flights.set_index(['From', 'To'], inplace=True)\nbonnar_flights\n\n\n\n\n\n\n\n\n\n\nNumber of Trips\n\n\nFrom\nTo\n\n\n\n\n\nGlasgow International Airport\nLondon City Airport\n36\n\n\nLondon Heathrow Airport\n30\n\n\nLondon Stansted Airport\n2\n\n\nLondon City Airport\nGlasgow International Airport\n36\n\n\nLondon Gatwick Airport\nGlasgow International Airport\n1\n\n\nLondon Heathrow Airport\nGlasgow International Airport\n11\n\n\n\n\n\n\n\nYou can see that all of this is him flying from Glasgow, where his constituency is, to London, for Parliament. A Glasgow to London flight takes about an hour and a half. The train takes four and a half hours.\n\n\nCode\npd.DataFrame({\n    'Journey': ['GLA-LCY', 'GLA-LHR', 'GLA-LGW', 'GLA-STN','Glasgow-Euston'],\n    'Vehicle': [*['Aeroplane']*4, 'Train'],\n    'Time (hours)': [1.5, 1.4, 1.6, 1.3, 4.5],\n    'Estimated CO2 (kg)': [101.2, 68.5, 81.4, 75.6, 24.57],\n    'Distance to parliament (km)': [9.5 , 16.7, 27.1, 41.2, 2.4]\n}).set_index('Journey')\n\n\n\n\n\n\n\n\n\nVehicle\nTime (hours)\nEstimated CO2 (kg)\nDistance to parliament (km)\n\n\nJourney\n\n\n\n\n\n\n\n\nGLA-LCY\nAeroplane\n1.5\n101.20\n9.5\n\n\nGLA-LHR\nAeroplane\n1.4\n68.50\n16.7\n\n\nGLA-LGW\nAeroplane\n1.6\n81.40\n27.1\n\n\nGLA-STN\nAeroplane\n1.3\n75.60\n41.2\n\n\nGlasgow-Euston\nTrain\n4.5\n24.57\n2.4\n\n\n\n\n\n\n\nIs this all fair enough then? The honourable member would save up to three hours and ten minutes per trip going by air, right? Getting through the airport takes at least an hour, though, and London Euston is a lot closer to Parliament than, for example, Stansted, shrinking the time advantage.\nLet’s have an estimate of the carbon emissions of these trips then.\n\n\nCode\nbonnar_flights['Emissions per flight (kg CO2)'] = [101.2, 68.5, 75.6, 101.2, 81.4, 68.5]\nbonnar_flights['Total emissions (kg CO2)'] = bonnar_flights['Number of Trips'] * bonnar_flights['Emissions per flight (kg CO2)']\nbonnar_flights\n\n\n\n\n\n\n\n\n\n\nNumber of Trips\nEmissions per flight (kg CO2)\nTotal emissions (kg CO2)\n\n\nFrom\nTo\n\n\n\n\n\n\n\nGlasgow International Airport\nLondon City Airport\n36\n101.2\n3643.2\n\n\nLondon Heathrow Airport\n30\n68.5\n2055.0\n\n\nLondon Stansted Airport\n2\n75.6\n151.2\n\n\nLondon City Airport\nGlasgow International Airport\n36\n101.2\n3643.2\n\n\nLondon Gatwick Airport\nGlasgow International Airport\n1\n81.4\n81.4\n\n\nLondon Heathrow Airport\nGlasgow International Airport\n11\n68.5\n753.5\n\n\n\n\n\n\n\n\n\nFrom this we can see that the total emissions from Steven Bonnar’s flights is 10.3275 tons of CO2. Given an estimate of the average total emissions of a UK resident is 11.7 tons, you might wonder if it might be better to take the train."
+  },
+  {
+    "objectID": "mp_expense_carbon.html#an-example---hey-big-spender",
+    "href": "mp_expense_carbon.html#an-example---hey-big-spender",
+    "title": "MP carbon footprint on expenses",
+    "section": "",
+    "text": "Here we’re going to look at the carbon footprint of the travel UK Members of Parliament (MPs) have put on their expenses. First, we will get the data for MPs’ expenses from IPSA. I’ll be looking at the data from the year 2022-2023, as this is the last complete year of data as of 21/11/2023.\nHere are the top 30 spenders, by the amount paid for their travel.\n\n\nCode\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\nmp_data: pd.DataFrame = pd.read_csv(\"data/individualBusinessCosts_22_23.csv\", low_memory=False)\ntravel_tags: list[str] = ['Dependant Travel', 'MP Travel', 'Staff Travel']\ntravel_data: pd.DataFrame = mp_data[mp_data['Category'].isin(travel_tags)][['Name', 'Category', 'Cost Type', 'Short Description', 'Details', 'Journey Type', 'From', 'To', 'Travel', 'Nights', 'Mileage', 'Amount Claimed', 'Amount Paid', 'Amount Not Paid', 'Amount Repaid']]\ntotal_paid = travel_data[['Name', 'Amount Paid']].groupby('Name').sum().sort_values(by='Amount Paid', ascending=False)\n\nfig, ax = plt.subplots(figsize = [8,8])\ntotal_paid.iloc[:30].plot(kind='bar', ax=ax)\nplt.ylabel(\"Total Travel Expenses (£)\")\nplt.xticks(rotation = 60, ha = \"right\")\nplt.legend([],[])\nplt.show()\n\n\n\n\n\nPhew, Steven Bonnar spent nearly £60,000 on travel.\n\n\nCode\nbonnar_cost_split = travel_data.loc[travel_data['Name'] == 'Steven Bonnar'][['Cost Type', 'Amount Paid']].groupby('Cost Type').sum()\nfig, ax = plt.subplots()\n\nax.pie(x = bonnar_cost_split['Amount Paid'],\n       labels = bonnar_cost_split.index,\n       labeldistance=None,\n       autopct='%1.0f%%'\n    )\nax.legend(bbox_to_anchor = (1.1, 0.8))\n\nplt.show()\n\n\n\n\n\nA lot of this was spent on air travel. Steven Bonnar is the Scottish National Party (SNP) MP for Coatbridge, Chryston and Bellshill.\n\n\nCode\nbonnar_flights = (travel_data\n    .loc[(travel_data['Name'] == 'Steven Bonnar') & (travel_data['Cost Type'] == 'Air travel')][['From', 'To']]\n    .groupby(by=['From', 'To'], group_keys='Total Flights')\n    .size()\n    .reset_index(name = 'Number of Trips')\n    )\nbonnar_flights.set_index(['From', 'To'], inplace=True)\nbonnar_flights\n\n\n\n\n\n\n\n\n\n\nNumber of Trips\n\n\nFrom\nTo\n\n\n\n\n\nGlasgow International Airport\nLondon City Airport\n36\n\n\nLondon Heathrow Airport\n30\n\n\nLondon Stansted Airport\n2\n\n\nLondon City Airport\nGlasgow International Airport\n36\n\n\nLondon Gatwick Airport\nGlasgow International Airport\n1\n\n\nLondon Heathrow Airport\nGlasgow International Airport\n11\n\n\n\n\n\n\n\nYou can see that all of this is him flying from Glasgow, where his constituency is, to London, for Parliament. A Glasgow to London flight takes about an hour and a half. The train takes four and a half hours.\n\n\nCode\npd.DataFrame({\n    'Journey': ['GLA-LCY', 'GLA-LHR', 'GLA-LGW', 'GLA-STN','Glasgow-Euston'],\n    'Vehicle': [*['Aeroplane']*4, 'Train'],\n    'Time (hours)': [1.5, 1.4, 1.6, 1.3, 4.5],\n    'Estimated CO2 (kg)': [101.2, 68.5, 81.4, 75.6, 24.57],\n    'Distance to parliament (km)': [9.5 , 16.7, 27.1, 41.2, 2.4]\n}).set_index('Journey')\n\n\n\n\n\n\n\n\n\nVehicle\nTime (hours)\nEstimated CO2 (kg)\nDistance to parliament (km)\n\n\nJourney\n\n\n\n\n\n\n\n\nGLA-LCY\nAeroplane\n1.5\n101.20\n9.5\n\n\nGLA-LHR\nAeroplane\n1.4\n68.50\n16.7\n\n\nGLA-LGW\nAeroplane\n1.6\n81.40\n27.1\n\n\nGLA-STN\nAeroplane\n1.3\n75.60\n41.2\n\n\nGlasgow-Euston\nTrain\n4.5\n24.57\n2.4\n\n\n\n\n\n\n\nIs this all fair enough then? The honourable member would save up to three hours and ten minutes per trip going by air, right? Getting through the airport takes at least an hour, though, and London Euston is a lot closer to Parliament than, for example, Stansted, shrinking the time advantage.\nLet’s have an estimate of the carbon emissions of these trips then.\n\n\nCode\nbonnar_flights['Emissions per flight (kg CO2)'] = [101.2, 68.5, 75.6, 101.2, 81.4, 68.5]\nbonnar_flights['Total emissions (kg CO2)'] = bonnar_flights['Number of Trips'] * bonnar_flights['Emissions per flight (kg CO2)']\nbonnar_flights\n\n\n\n\n\n\n\n\n\n\nNumber of Trips\nEmissions per flight (kg CO2)\nTotal emissions (kg CO2)\n\n\nFrom\nTo\n\n\n\n\n\n\n\nGlasgow International Airport\nLondon City Airport\n36\n101.2\n3643.2\n\n\nLondon Heathrow Airport\n30\n68.5\n2055.0\n\n\nLondon Stansted Airport\n2\n75.6\n151.2\n\n\nLondon City Airport\nGlasgow International Airport\n36\n101.2\n3643.2\n\n\nLondon Gatwick Airport\nGlasgow International Airport\n1\n81.4\n81.4\n\n\nLondon Heathrow Airport\nGlasgow International Airport\n11\n68.5\n753.5\n\n\n\n\n\n\n\n\n\nFrom this we can see that the total emissions from Steven Bonnar’s flights is 10.3275 tons of CO2. Given an estimate of the average total emissions of a UK resident is 11.7 tons, you might wonder if it might be better to take the train."
+  },
+  {
+    "objectID": "mp_expense_carbon.html#estimating-emissions",
+    "href": "mp_expense_carbon.html#estimating-emissions",
+    "title": "MP carbon footprint on expenses",
+    "section": "Estimating emissions",
+    "text": "Estimating emissions\nAll this isn’t just to bash poor Steven Bonnar, against whom I have no particular grudge. It’s always going to be tricky commuting from Glasgow to London. I do think, however, we should look at how much damage to the environment the UK taxpayer is paying for. Here, I’ll be estimating the emissions for each taxpayer-funded trip, then breaking down the dataset to see if anyone could be doing better."
+  },
+  {
+    "objectID": "mp_expense_carbon.html#the-point-of-the-exercise",
+    "href": "mp_expense_carbon.html#the-point-of-the-exercise",
+    "title": "MP carbon footprint on expenses",
+    "section": "The point of the exercise",
+    "text": "The point of the exercise\nAll this isn’t just to bash poor Steven Bonnar, against whom I have no particular grudge. It’s always going to be tricky commuting from Glasgow to London. I do think, however, we should look at how much damage to the environment the UK taxpayer is paying for. Here, I’ll be estimating the emissions for each taxpayer-funded trip, then breaking down the dataset to see if anyone could be doing better.\n\nEstimating emissions\nHow do you estimate emissions from travel then? For some modes of transport, it’s fairly straightforward - there’s a particular value per kilometre, and we assume everything else evens out.\nWhat kinds of expenses are people claiming then?\n\n\nCode\npd.DataFrame(travel_data['Cost Type'].unique())\n\n\n\n\n\n\n\n\n\n0\n\n\n\n\n0\nParking\n\n\n1\nRail\n\n\n2\nRailcard\n\n\n3\nAir travel\n\n\n4\nCongestion charge & toll\n\n\n5\nHotel - European\n\n\n6\nHotel - UK Not London\n\n\n7\nMileage - car\n\n\n8\nSubsistence\n\n\n9\nTaxi\n\n\n10\nHotel - London\n\n\n11\nOther public transport\n\n\n12\nHotel - late night\n\n\n13\nVehicle hire cost\n\n\n14\nAir Travel\n\n\n15\nTravel Associated Cost\n\n\n16\nMileage - bicycle\n\n\n17\nNewspapers, journals, magazines\n\n\n18\nMileage - motorcycle\n\n\n19\nHospitality\n\n\n\n\n\n\n\nSome of these we will discard. We aren’t looking at the emissions of staying in a hotel, because it would be too hard to estimate, and not meaningful to look at here. Other things like railcards and congestion charges don’t have a meaningful emissions figure.\nI am curious as to what someone is claiming as the mileage on their bicycle, though. New tyres? Protein bars?\n\nRoad emissions\n\n\nTrain emissions\n\n\nAir Travel emissions"
+  }
+]

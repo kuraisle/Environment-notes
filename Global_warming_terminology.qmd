@@ -1,0 +1,7 @@
+---
+title: "Global warming terminology"
+format: html
+---
+# Global warming
+The average temperature of the globe is increasing. However, this is on the level of climate (long term trends), and taken for the entire globe. This doesn't necessarily mean that the temperature on a given day at any location in the world will be higher. In fact, both hot and cold extreme weather events are increasing in a warming globe as established weather patterns break down.
+

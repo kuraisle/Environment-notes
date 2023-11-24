@@ -1,0 +1,7 @@
+---
+title: Extras
+format: html
+---
+These are just some bits that don't fit with the main notes, but I needed to put somewhere.
+
+- [Carbon footprint of MP's travel expenses](mp_expense_carbon.qmd)
